@@ -33,19 +33,12 @@ public class TestDown {
 
         //文件保存位置
         File saveDir = new File(savePath);
-        if (!saveDir.exists()) {
-            saveDir.mkdir();
-        }
+        assert saveDir.exists() || saveDir.mkdir();
         File file = new File(saveDir + File.separator + fileName);
         FileOutputStream fos = new FileOutputStream(file);
         fos.write(getData);
-        if (fos != null) {
-            fos.close();
-        }
-        if (inputStream != null) {
-            inputStream.close();
-        }
-
+        fos.close();
+        inputStream.close();
 
         System.out.println("info:" + url + " download success");
 
