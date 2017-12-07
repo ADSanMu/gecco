@@ -81,8 +81,9 @@ public class Spider implements Runnable {
                 }
                 start = true;
             }
+            String url = request.getUrl();
             if (log.isDebugEnabled()) {
-                log.debug("match url : " + request.getUrl());
+                log.debug("match url : " + url);
             }
             //匹配SpiderBean
             currSpiderBeanClass = engine.getSpiderBeanFactory().matchSpider(request);
@@ -94,14 +95,15 @@ public class Spider implements Runnable {
                     if (response.getStatus() == 302 || response.getStatus() == 301) {
                         spiderScheduler.into(request.subRequest(response.getContent()));
                     } else {
-                        log.error("cant't match url : " + request.getUrl());
+                        log.error("cant't match url : " + url);
                     }
                 } else {
-                    if (!engine.isAccepted(request.getUrl())) {
-                        continue;
-                    }
                     //获取SpiderBean的上下文：downloader,beforeDownloader,afterDownloader,render,pipelines
                     SpiderBeanContext context = getSpiderBeanContext();
+                    if (engine.isAccepted(url)) {
+                        log.info("Current url : " + url + " has been requested");
+                        continue;
+                    }
                     response = download(context, request);
                     if (response.getStatus() == 200) {
                         //render
@@ -109,15 +111,20 @@ public class Spider implements Runnable {
                         SpiderBean spiderBean = render.inject(currSpiderBeanClass, request, response);
                         //pipelines
                         pipelines(spiderBean, context);
+                        if (url.endsWith("/")) {
+                            url = url.substring(0, url.lastIndexOf("/"));
+                        }
+                        engine.acceptUrl(url);
+
                     } else if (response.getStatus() == 302 || response.getStatus() == 301) {
                         spiderScheduler.into(request.subRequest(response.getContent()));
                     }
                 }
             } catch (Exception ex) {
                 if (engine.isDebug()) {
-                    log.error(request.getUrl() + " ERROR : ", ex);
+                    log.error(url + " ERROR : ", ex);
                 }
-                log.error(request.getUrl() + " ERROR : " + ex.getClass().getName() + ex.getMessage());
+                log.error(url + " ERROR : " + ex.getClass().getName() + ex.getMessage());
             } finally {
                 if (response != null) {
                     response.close();
@@ -190,7 +197,7 @@ public class Spider implements Runnable {
     }
 
     private HttpResponse download(SpiderBeanContext context, HttpRequest request) throws DownloadException {
-        Downloader currDownloader = null;
+        Downloader currDownloader;
         BeforeDownload before = null;
         AfterDownload after = null;
         int timeout = 1000;

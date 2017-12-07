@@ -1,6 +1,5 @@
 package com.geccocrawler.gecco.request;
 
-import java.net.MalformedURLException;
 import java.util.Map;
 
 public interface HttpRequest extends Cloneable {

@@ -46,7 +46,7 @@ import com.google.common.io.Resources;
  */
 public class GeccoEngine<V> extends Thread implements Callable<V> {
 
-    private static final Set<String> FINISHED_URLS = Sets.newConcurrentHashSet();
+    public static final Set<String> FINISHED_URLS = Sets.newConcurrentHashSet();
 
     private static Log log = LogFactory.getLog(GeccoEngine.class);
 
@@ -217,6 +217,8 @@ public class GeccoEngine<V> extends Thread implements Callable<V> {
 
     @Override
     public void run() {
+        long l = System.currentTimeMillis();
+        log.info("============================Gecco Engine Start============================");
         if (debug) {
             Logger log = LogManager.getLogger("com.geccocrawler.gecco.spider.render");
             log.setLevel(Level.DEBUG);
@@ -260,6 +262,7 @@ public class GeccoEngine<V> extends Thread implements Callable<V> {
         GeccoJmx.export(classpath);
         // 非循环模式等待线程执行完毕后关闭
         closeUnitlComplete();
+        log.info("============================Gecco Engine end : " + ((System.currentTimeMillis() - l) / 1000) + "s============================");
     }
 
     @Override
@@ -445,8 +448,13 @@ public class GeccoEngine<V> extends Thread implements Callable<V> {
         return this;
     }
 
+
+    public void acceptUrl(String url) {
+        FINISHED_URLS.add(url);
+    }
+
     public boolean isAccepted(String url) {
-        return FINISHED_URLS.add(url);
+        return FINISHED_URLS.contains(url);
     }
 
     @Override
