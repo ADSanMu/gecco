@@ -65,8 +65,8 @@ public class TestDown {
 
     public static void main(String[] args) {
         try {
-            downLoadFromUrl("https://uk.spdrs.com/library-content/public/fixed-income-characteristics_en.pdf?",
-                    "test.pdf", "D:\\TEST");
+//            downLoadFromUrl("https://uk.spdrs.com/library-content/public/fixed-income-characteristics_en.pdf?",
+//                    "test.pdf", "D:\\TEST");
         } catch (Exception e) {
             // TODO: handle exception
         }

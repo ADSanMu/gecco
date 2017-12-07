@@ -127,9 +127,9 @@ public class UrlMatcher {
 		String url = "http://www.ly.com/HotelInfo-597101.html#id_nameAndSliderInfo&is=1&searchId=undefined&ab=0";
 		String regex = "http://www.ly.com/HotelInfo-{code}.html#{hash}";
 		String url1 = "http://xxx.com/index.html";
-		String url2 = "http://xxx.com/123456.html";
-		String regex2 = "http://xxx.com/{code:[0-9]+}.html";
-		String regex3 = "http://xxx.com/{code}.html";
+		String url2 = "http://xxx.com/asdasd.html";
+		String regex2 = "http://xxx.com/{code:.*}.html";
+		String regex3 = "http://xxx.com/{code:[0-9]+}.html";
 		System.out.println(match(url2, regex2));
 		System.out.println(match(url2, regex3));
 	}

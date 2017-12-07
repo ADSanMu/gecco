@@ -7,9 +7,11 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
+import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,11 +46,13 @@ import com.google.common.io.Resources;
  */
 public class GeccoEngine<V> extends Thread implements Callable<V> {
 
+    private static final Set<String> FINISHED_URLS = Sets.newConcurrentHashSet();
+
     private static Log log = LogFactory.getLog(GeccoEngine.class);
 
     private Date startTime;
 
-    private List<HttpRequest> startRequests = new ArrayList<HttpRequest>();
+    private List<HttpRequest> startRequests = new ArrayList<>();
 
     private Scheduler scheduler;
 
@@ -441,6 +445,9 @@ public class GeccoEngine<V> extends Thread implements Callable<V> {
         return this;
     }
 
+    public boolean isAccepted(String url) {
+        return FINISHED_URLS.add(url);
+    }
 
     @Override
     public V call() throws Exception {

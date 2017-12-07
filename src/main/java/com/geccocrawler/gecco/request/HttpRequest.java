@@ -1,44 +1,47 @@
 package com.geccocrawler.gecco.request;
 
+import java.net.MalformedURLException;
 import java.util.Map;
 
 public interface HttpRequest extends Cloneable {
-	
-	public String getUrl();
-	
-	public void setUrl(String url);
-	
-	public void addParameter(String name, String value);
-	
-	public void setParameters(Map<String, String> parameters);
-	
-	public String getParameter(String name);
-	
-	public Map<String, String> getParameters();
-	
-	public void addHeader(String name, String value);
-	
-	public Map<String, String> getHeaders();
-	
-	public void clearHeader();
 
-	public void refer(String refer);
-	
-	public String getCharset();
-	
-	public void setCharset(String charset);
-	
-	public HttpRequest subRequest(String url);
-	
-	public Map<String, String> getCookies();
-	
-	public void addCookie(String name, String value);
-	
-	public String getCookie(String name);
-	
-	public void clearCookie();
+    String getUrl();
 
-	public long getPriority();
-	
-	public void setPriority(long prio);
+    String getPath();
+
+    void setUrl(String url);
+
+    void addParameter(String name, String value);
+
+    void setParameters(Map<String, String> parameters);
+
+    String getParameter(String name);
+
+    Map<String, String> getParameters();
+
+    void addHeader(String name, String value);
+
+    Map<String, String> getHeaders();
+
+    void clearHeader();
+
+    void refer(String refer);
+
+    String getCharset();
+
+    void setCharset(String charset);
+
+    HttpRequest subRequest(String url);
+
+    Map<String, String> getCookies();
+
+    void addCookie(String name, String value);
+
+    String getCookie(String name);
+
+    void clearCookie();
+
+    long getPriority();
+
+    void setPriority(long prio);
 }
