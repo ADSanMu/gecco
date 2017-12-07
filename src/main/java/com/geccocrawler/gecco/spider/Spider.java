@@ -106,16 +106,15 @@ public class Spider implements Runnable {
                     }
                     response = download(context, request);
                     if (response.getStatus() == 200) {
+                        if (url.endsWith("/")) {
+                            url = url.substring(0, url.lastIndexOf("/"));
+                        }
+                        engine.acceptUrl(url);
                         //render
                         Render render = context.getRender();
                         SpiderBean spiderBean = render.inject(currSpiderBeanClass, request, response);
                         //pipelines
                         pipelines(spiderBean, context);
-                        if (url.endsWith("/")) {
-                            url = url.substring(0, url.lastIndexOf("/"));
-                        }
-                        engine.acceptUrl(url);
-
                     } else if (response.getStatus() == 302 || response.getStatus() == 301) {
                         spiderScheduler.into(request.subRequest(response.getContent()));
                     }
