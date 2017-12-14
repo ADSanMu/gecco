@@ -1,24 +1,5 @@
 package com.geccocrawler.gecco;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-
-import com.google.common.collect.Sets;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.alibaba.fastjson.JSON;
 import com.geccocrawler.gecco.downloader.proxy.FileProxys;
 import com.geccocrawler.gecco.downloader.proxy.Proxys;
@@ -36,8 +17,26 @@ import com.geccocrawler.gecco.scheduler.Scheduler;
 import com.geccocrawler.gecco.scheduler.StartScheduler;
 import com.geccocrawler.gecco.spider.Spider;
 import com.geccocrawler.gecco.spider.SpiderBeanFactory;
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * 爬虫引擎，每个爬虫引擎最好独立进程，在分布式爬虫场景下，可以单独分配一台爬虫服务器。引擎包括Scheduler、Downloader、Spider、 SpiderBeanFactory4个主要模块
@@ -244,7 +243,7 @@ public class GeccoEngine<V> extends Thread implements Callable<V> {
             threadCount = 1;
         }
         this.cdl = new CountDownLatch(threadCount);
-        startsJson();
+        loadPreConfig();
         for (HttpRequest startRequest : startRequests) {
             scheduler.into(startRequest);
         }
@@ -261,7 +260,7 @@ public class GeccoEngine<V> extends Thread implements Callable<V> {
         // 启动导出jmx信息
         GeccoJmx.export(classpath);
         // 非循环模式等待线程执行完毕后关闭
-        closeUnitlComplete();
+        closeUntilComplete();
         log.info("============================Gecco Engine end : " + ((System.currentTimeMillis() - l) / 1000) + "s============================");
     }
 
@@ -273,7 +272,7 @@ public class GeccoEngine<V> extends Thread implements Callable<V> {
         super.start();
     }
 
-    private GeccoEngine startsJson() {
+    private void loadPreConfig() {
         try {
             URL url = Resources.getResource("starts.json");
             File file = new File(url.getPath());
@@ -289,7 +288,6 @@ public class GeccoEngine<V> extends Thread implements Callable<V> {
         } catch (IOException ioex) {
             log.error(ioex);
         }
-        return this;
     }
 
     public Scheduler getScheduler() {
@@ -354,7 +352,7 @@ public class GeccoEngine<V> extends Thread implements Callable<V> {
     /**
      * 非循环模式等待线程执行完毕后关闭
      */
-    public void closeUnitlComplete() {
+    public void closeUntilComplete() {
         if (!loop) {
             try {
                 cdl.await();
@@ -446,15 +444,6 @@ public class GeccoEngine<V> extends Thread implements Callable<V> {
     public GeccoEngine setEventListener(EventListener eventListener) {
         this.eventListener = eventListener;
         return this;
-    }
-
-
-    public void acceptUrl(String url) {
-        FINISHED_URLS.add(url);
-    }
-
-    public boolean isAccepted(String url) {
-        return FINISHED_URLS.contains(url);
     }
 
     @Override

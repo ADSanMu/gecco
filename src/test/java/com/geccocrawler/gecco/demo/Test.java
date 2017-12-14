@@ -1,5 +1,7 @@
 package com.geccocrawler.gecco.demo;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * @author a637182
  * @email Jiacheng_Deng@ssga.com
@@ -7,8 +9,19 @@ package com.geccocrawler.gecco.demo;
  */
 public class Test {
 
-    public static void main(String[] args) {
-        String a = "/site-content/scripts/spdr_new.css?version=1";
-        System.out.println(a.matches(".*\\.(html|js|css)(\\?version=\\d*)$"));
+    public static void main(String[] args) throws Exception {
+        final CountDownLatch cld = new CountDownLatch(10);
+
+        new Thread(() -> {
+            for (int i = 1; i < 100; i++) {
+                cld.countDown();
+                System.out.println(i);
+            }
+            System.out.println("finish");
+        }).start();
+
+        cld.await();
+
+        System.out.println("success");
     }
 }

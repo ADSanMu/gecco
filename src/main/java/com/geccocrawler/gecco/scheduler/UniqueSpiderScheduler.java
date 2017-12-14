@@ -1,13 +1,11 @@
 package com.geccocrawler.gecco.scheduler;
 
-import java.util.Comparator;
-import java.util.NavigableSet;
-import java.util.concurrent.ConcurrentSkipListSet;
-
+import com.geccocrawler.gecco.request.HttpRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.geccocrawler.gecco.request.HttpRequest;
+import java.util.NavigableSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * 保证队列内容唯一，剔除重复抓取
@@ -22,19 +20,14 @@ public class UniqueSpiderScheduler implements Scheduler {
 	private NavigableSet<SortHttpRequest> set;
 	
 	public UniqueSpiderScheduler() {
-		set = new ConcurrentSkipListSet<SortHttpRequest>(new Comparator<SortHttpRequest>() {
-
-			@Override
-			public int compare(SortHttpRequest o1, SortHttpRequest o2) {
-				if(o1.getHttpRequest().hashCode() == o2.getHttpRequest().hashCode()) {
-					if(o1.getHttpRequest().equals(o2.getHttpRequest())) {
-						return 0;
-					}
-				}
-				return (o1.getPriority() - o2.getPriority()) > 0 ? 1 : -1 ;
-			}
-			
-		});
+		set = new ConcurrentSkipListSet<>((o1, o2) -> {
+            if(o1.getHttpRequest().hashCode() == o2.getHttpRequest().hashCode()) {
+                if(o1.getHttpRequest().equals(o2.getHttpRequest())) {
+                    return 0;
+                }
+            }
+            return (o1.getPriority() - o2.getPriority()) > 0 ? 1 : -1 ;
+        });
 	}
 
 	@Override

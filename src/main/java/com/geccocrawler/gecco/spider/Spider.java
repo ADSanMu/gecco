@@ -82,9 +82,6 @@ public class Spider implements Runnable {
                 start = true;
             }
             String url = request.getUrl();
-            if (log.isDebugEnabled()) {
-                log.debug("match url : " + url);
-            }
             //匹配SpiderBean
             currSpiderBeanClass = engine.getSpiderBeanFactory().matchSpider(request);
             //download
@@ -100,16 +97,13 @@ public class Spider implements Runnable {
                 } else {
                     //获取SpiderBean的上下文：downloader,beforeDownloader,afterDownloader,render,pipelines
                     SpiderBeanContext context = getSpiderBeanContext();
-                    if (engine.isAccepted(url)) {
-                        log.info("Current url : " + url + " has been requested");
-                        continue;
-                    }
+
                     response = download(context, request);
                     if (response.getStatus() == 200) {
                         if (url.endsWith("/")) {
                             url = url.substring(0, url.lastIndexOf("/"));
                         }
-                        engine.acceptUrl(url);
+
                         //render
                         Render render = context.getRender();
                         SpiderBean spiderBean = render.inject(currSpiderBeanClass, request, response);

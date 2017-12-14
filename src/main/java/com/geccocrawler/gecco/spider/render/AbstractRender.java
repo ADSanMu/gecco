@@ -55,7 +55,7 @@ public abstract class AbstractRender implements Render {
 
     @Override
     @SuppressWarnings({"unchecked"})
-    public SpiderBean inject(Class<? extends SpiderBean> clazz, HttpRequest request, HttpResponse response) {
+    public final SpiderBean inject(Class<? extends SpiderBean> clazz, HttpRequest request, HttpResponse response) {
         try {
             SpiderBean bean = clazz.newInstance();
             BeanMap beanMap = BeanMap.create(bean);
@@ -63,7 +63,7 @@ public abstract class AbstractRender implements Render {
             requestParameterFieldRender.render(request, response, beanMap, bean);
             String url = request.getUrl();
             URL netUrl = new URL(url);
-            if (netUrl.getPath().matches("/etc.*\\.js") || netUrl.getPath().matches("/etc.*\\.css")) {
+            if (netUrl.getPath().matches(".*\\.(css|js).*")) {
                 //请求的是js或者是css的内容，直接返回
                 Set<Field> htmlFields = ReflectionUtils.getAllFields(bean.getClass());
                 for (Field htmlField : htmlFields) {
